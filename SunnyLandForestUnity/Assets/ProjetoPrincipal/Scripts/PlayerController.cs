@@ -112,6 +112,17 @@ public class PlayerController : MonoBehaviour
         return collided;
     }
 
-    
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        switch (collision.gameObject.tag)
+        {
+            case "Coletaveis":
+                Destroy(collision.gameObject);
+                break;
+
+        }
+    }
+
 
 }
