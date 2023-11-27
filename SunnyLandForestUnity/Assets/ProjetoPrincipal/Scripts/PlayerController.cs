@@ -25,6 +25,10 @@ public class PlayerController : MonoBehaviour
     public int maxJump = 2;
     public float jumpForce;
 
+    // game control
+
+    private GameControl _gameControl;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -33,6 +37,9 @@ public class PlayerController : MonoBehaviour
 
         playerAnimator = GetComponent<Animator>();
         playerRigidbody2D = GetComponent<Rigidbody2D>();
+
+        //_gameControl = FindObjectOfType(typeof(GameControl)) as GameControl;
+        _gameControl = FindObjectOfType<GameControl>();
 
     }
 
@@ -118,6 +125,7 @@ public class PlayerController : MonoBehaviour
         switch (collision.gameObject.tag)
         {
             case "Coletaveis":
+                _gameControl.Pontuacao(1);
                 Destroy(collision.gameObject);
                 break;
 
