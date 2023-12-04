@@ -15,6 +15,8 @@ public class GameControl : MonoBehaviour
 
     public GameObject hitInimigoMortoPrefab;
 
+    public Sprite[] imagensDasVidas;
+    public Image barraDeVida;
     public void Pontuacao( int qtdPontos)
     {
 
@@ -25,6 +27,11 @@ public class GameControl : MonoBehaviour
         
         fxGame.PlayOneShot(fxCenouraColetada);
 
+    }
+
+    public void BarraDeVidas(int vidas)
+    {
+        barraDeVida.sprite = imagensDasVidas[vidas];
     }
 
 }

@@ -9,6 +9,8 @@ public class PlayerController : MonoBehaviour
     // propriedades do player
     private Animator playerAnimator;
     private Rigidbody2D playerRigidbody2D;
+    private SpriteRenderer playerSpriteRenderer;
+    private bool playerIvuneravel;
 
     // filho do player que verifica se o player está tocando no chão
     [Header("Collision Settings")]
@@ -33,6 +35,8 @@ public class PlayerController : MonoBehaviour
     [Header("Audio Settings")]
     public AudioSource fxGame;
     public AudioClip fxPulo;
+    public int vidas = 3;
+    public Color hitColor;
     private GameControl _gameControl;
 
     // Start is called before the first frame update
@@ -43,6 +47,7 @@ public class PlayerController : MonoBehaviour
 
         playerAnimator = GetComponent<Animator>();
         playerRigidbody2D = GetComponent<Rigidbody2D>();
+        playerSpriteRenderer = GetComponent<SpriteRenderer>();
 
         //_gameControl = FindObjectOfType(typeof(GameControl)) as GameControl;
         _gameControl = FindObjectOfType<GameControl>();
@@ -152,5 +157,42 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        switch (collision.gameObject.tag)
+        {
+            case "Inimigos":
+                Hurt();
+                
+                break;
+        }
+    }
 
+    void Hurt()
+    {
+        if (!playerIvuneravel)
+        { 
+            playerIvuneravel = true;
+            vidas--;
+            StartCoroutine("Dano");
+           _gameControl.BarraDeVidas(vidas);
+        
+        }
+
+    }
+    IEnumerator Dano()
+    {
+        playerSpriteRenderer.color = hitColor;
+        yield return new WaitForSeconds(0.1f);
+
+        for (float i = 0; i<1; i += 0.1f)
+        {
+            playerSpriteRenderer.enabled = false;
+            yield return new WaitForSeconds(0.1f);
+            playerSpriteRenderer.enabled = true;
+            yield return new WaitForSeconds(0.1f);
+        }
+        playerSpriteRenderer.color = Color.white;
+        playerIvuneravel = false;
+    }
 }
