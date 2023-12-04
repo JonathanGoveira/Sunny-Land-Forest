@@ -11,6 +11,9 @@ public class GameControl : MonoBehaviour
 
     public AudioSource fxGame;
     public AudioClip fxCenouraColetada;
+    public AudioClip fxInimigoMorto;
+
+    public GameObject hitInimigoMortoPrefab;
 
     public void Pontuacao( int qtdPontos)
     {

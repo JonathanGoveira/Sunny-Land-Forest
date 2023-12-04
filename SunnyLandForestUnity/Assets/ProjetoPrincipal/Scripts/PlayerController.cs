@@ -9,27 +9,31 @@ public class PlayerController : MonoBehaviour
     // propriedades do player
     private Animator playerAnimator;
     private Rigidbody2D playerRigidbody2D;
-    
+
     // filho do player que verifica se o player está tocando no chão
-    private Transform groundCheck;
+    [Header("Collision Settings")]
     public bool isGround;
+    private Transform groundCheck;
 
     // variaveis de movimentação
+    [Header("Move Settings")]
     public float speed;
     public float touchRun = 0.0f;
     private bool facinRight = true;
 
     // pulo
-    private bool jump = false;
-    public int numberJumps = 0;
-    public int maxJump = 2;
+    [Header("Jump Settings")]
+    public int numberJumps;
+    public int maxJump;
     public float jumpForce;
+    public float jumpEnemieForce;
+    private bool jump = false;
 
     // game control
-
-    private GameControl _gameControl;
+    [Header("Audio Settings")]
     public AudioSource fxGame;
     public AudioClip fxPulo;
+    private GameControl _gameControl;
 
     // Start is called before the first frame update
     void Start()
@@ -132,6 +136,19 @@ public class PlayerController : MonoBehaviour
                 Destroy(collision.gameObject);
                 break;
 
+            case "Inimigos":
+
+                GameObject explosao = Instantiate(_gameControl.hitInimigoMortoPrefab, this.transform.position, this.transform.localRotation);
+                Destroy(explosao, 0.5f);
+
+                Rigidbody2D rigidbody = GetComponent<Rigidbody2D>();
+                rigidbody.velocity = new Vector2(rigidbody.velocity.x, 0);
+                rigidbody.AddForce(new Vector2(0, jumpEnemieForce));
+
+                _gameControl.fxGame.PlayOneShot(_gameControl.fxInimigoMorto);
+
+                Destroy(collision.gameObject);
+                break;
         }
     }
 

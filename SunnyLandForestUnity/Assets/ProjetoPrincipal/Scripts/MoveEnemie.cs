@@ -41,7 +41,7 @@ public class MoveEnemie : MonoBehaviour
                 }
                 //Debug.Log("inimigo" + enemie.position);
                 //Debug.Log("target" + target[idTarget].position);
-                Debug.Log("target colidiu");
+                //Debug.Log("target colidiu");
                 if (target[idTarget].position.x < enemie.position.x && isRight == true)
                 {
                     flip();
