@@ -34,8 +34,8 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        groundCheck = this.gameObject.transform.GetChild(0);
-        // ou groundCheck = GameObject.Find("GroundCheck").transform;
+        //groundCheck = this.gameObject.transform.GetChild(0);
+        groundCheck = GameObject.Find("GroundCheck").transform;
 
         playerAnimator = GetComponent<Animator>();
         playerRigidbody2D = GetComponent<Rigidbody2D>();
