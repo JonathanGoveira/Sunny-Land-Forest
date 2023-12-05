@@ -308,6 +308,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72c4bd40349a866409cd5530111ad094, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerDie: {fileID: 1023497792565296445, guid: 9764b589d9d1f644a983a7b2f3f3dac2, type: 3}
   isGround: 0
   speed: 6.1
   touchRun: 0
@@ -652,6 +653,7 @@ MonoBehaviour:
   fxGame: {fileID: 1463774968}
   fxCenouraColetada: {fileID: 8300000, guid: 575eb832ad3415a4c8d38dcf3c755801, type: 3}
   fxInimigoMorto: {fileID: 8300000, guid: 917f4e3213bef6e43a5ff959b69f6065, type: 3}
+  fxDie: {fileID: 8300000, guid: 907a9df859979744ab81af031382f286, type: 3}
   hitInimigoMortoPrefab: {fileID: 2391825595301678632, guid: c1fe1538b0416a349b463e52849a106d, type: 3}
   imagensDasVidas:
   - {fileID: -1743906722, guid: ab9b947c21f6e31469eab1f49a33a879, type: 3}

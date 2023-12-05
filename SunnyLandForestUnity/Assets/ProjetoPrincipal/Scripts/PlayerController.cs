@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D playerRigidbody2D;
     private SpriteRenderer playerSpriteRenderer;
     private bool playerIvuneravel;
-
+    public GameObject playerDie;
     // filho do player que verifica se o player está tocando no chão
     [Header("Collision Settings")]
     public bool isGround;
@@ -176,6 +176,15 @@ public class PlayerController : MonoBehaviour
             vidas--;
             StartCoroutine("Dano");
            _gameControl.BarraDeVidas(vidas);
+
+            if (vidas < 1)
+            {
+                GameObject pDieTemp = Instantiate(playerDie, this.transform.position, Quaternion.identity);
+                Rigidbody2D rbDie = pDieTemp.GetComponent<Rigidbody2D>();
+                rbDie.AddForce(new Vector2(150f, 500f));
+                _gameControl.fxGame.PlayOneShot(_gameControl.fxDie);
+                gameObject.SetActive(false);
+            }
         
         }
 
