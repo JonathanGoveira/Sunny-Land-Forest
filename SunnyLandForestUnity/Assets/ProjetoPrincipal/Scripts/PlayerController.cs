@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
+using UnityEngine.SceneManagement;
+
 
 public class PlayerController : MonoBehaviour
 {
@@ -161,9 +163,21 @@ public class PlayerController : MonoBehaviour
     {
         switch (collision.gameObject.tag)
         {
+            case "Plataforma":
+                this.transform.parent = collision.transform;
+                break;
             case "Inimigos":
-                Hurt();
-                
+                Hurt();    
+                break;
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        switch (collision.gameObject.tag)
+        {
+            case "Plataforma":
+                this.transform.parent = null;
                 break;
         }
     }
@@ -184,6 +198,7 @@ public class PlayerController : MonoBehaviour
                 rbDie.AddForce(new Vector2(150f, 500f));
                 _gameControl.fxGame.PlayOneShot(_gameControl.fxDie);
                 gameObject.SetActive(false);
+                Invoke("CarregaJogo", 4f);
             }
         
         }
@@ -203,5 +218,10 @@ public class PlayerController : MonoBehaviour
         }
         playerSpriteRenderer.color = Color.white;
         playerIvuneravel = false;
+    }
+
+    void CarregaJogo() 
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
