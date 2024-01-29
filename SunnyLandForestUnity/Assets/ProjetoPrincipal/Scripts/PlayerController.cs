@@ -148,6 +148,10 @@ public class PlayerController : MonoBehaviour
 
             case "Inimigos":
 
+                // Destroi o objeto pai do inimigo
+                Destroy(collision.gameObject.transform.parent.gameObject);
+                Debug.Log("Colidou com o " + collision.gameObject.name);
+                Debug.Log("Seu pai é o " + collision.gameObject.transform.root.name);
                 GameObject explosao = Instantiate(_gameControl.hitInimigoMortoPrefab, this.transform.position, this.transform.localRotation);
                 Destroy(explosao, 0.5f);
 
@@ -157,11 +161,9 @@ public class PlayerController : MonoBehaviour
 
                 _gameControl.fxGame.PlayOneShot(_gameControl.fxInimigoMorto);
 
-                Destroy(collision.gameObject);
                 break;
         }
     }
-
     void OnCollisionEnter2D(Collision2D collision)
     {
         switch (collision.gameObject.tag)

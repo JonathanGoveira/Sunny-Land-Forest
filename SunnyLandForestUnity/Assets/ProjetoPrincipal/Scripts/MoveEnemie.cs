@@ -7,7 +7,7 @@ public class MoveEnemie : MonoBehaviour
 
 
     public Transform enemie;
-    public SpriteRenderer enemieSprite;
+    private SpriteRenderer enemieSprite;
     public Transform[] target;
     public float speed;
     public bool isRight;
@@ -19,7 +19,6 @@ public class MoveEnemie : MonoBehaviour
     {
 
         enemieSprite = enemie.gameObject.GetComponent<SpriteRenderer>();
-        //enemie.position = target[0].position;
         enemie.position = new Vector3(target[0].position.x,enemie.position.y,0);
         idTarget = 1;
     }
@@ -39,9 +38,7 @@ public class MoveEnemie : MonoBehaviour
                 {
                     idTarget = 0;
                 }
-                //Debug.Log("inimigo" + enemie.position);
-                //Debug.Log("target" + target[idTarget].position);
-                //Debug.Log("target colidiu");
+
                 if (target[idTarget].position.x < enemie.position.x && isRight == true)
                 {
                     flip();
