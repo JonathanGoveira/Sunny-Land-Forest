@@ -23,7 +23,7 @@ public class PlayerController : MonoBehaviour
     [Header("Move Settings")]
     public float speed;
     public float touchRun = 0.0f;
-    private bool facinRight = true;
+    public bool facinRight = true;
     public ParticleSystem dust;
 
     // pulo
@@ -161,6 +161,10 @@ public class PlayerController : MonoBehaviour
 
                 _gameControl.fxGame.PlayOneShot(_gameControl.fxInimigoMorto);
 
+                break;
+
+            case "Damage":
+                Hurt();
                 break;
         }
     }
