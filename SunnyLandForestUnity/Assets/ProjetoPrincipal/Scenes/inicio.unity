@@ -1198,7 +1198,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1636646793}
   - component: {fileID: 1636646792}
-  - component: {fileID: 1636646794}
   m_Layer: 0
   m_Name: FadeControl
   m_TagString: Untagged
@@ -1218,6 +1217,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24147e89262e72545adba28497db7401, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  imagemFade: {fileID: 160565435}
+  corInicial: {r: 0, g: 0, b: 0, a: 1}
+  corFinal: {r: 0, g: 0, b: 0, a: 0}
+  duracaoFade: 4
+  isFade: 0
 --- !u!4 &1636646793
 Transform:
   m_ObjectHideFlags: 0
@@ -1233,23 +1237,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1636646794
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1636646791}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75f0b31034f95344986da66620f91cda, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  imagemFade: {fileID: 160565435}
-  corInicial: {r: 0, g: 0, b: 0, a: 1}
-  corFinal: {r: 0, g: 0, b: 0, a: 0}
-  duracaoFade: 4
-  isFade: 0
 --- !u!1 &1667489814
 GameObject:
   m_ObjectHideFlags: 0

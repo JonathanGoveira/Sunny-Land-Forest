@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour
     public float speed;
     public float touchRun = 0.0f;
     private bool facinRight = true;
+    public ParticleSystem dust;
 
     // pulo
     [Header("Jump Settings")]
@@ -91,6 +92,7 @@ public class PlayerController : MonoBehaviour
         facinRight = !facinRight;
         // inverte o sinal do transform para fazer o flip do personagem, 1 passa a ser -1 e vice e versa
         transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+        CriarPoeira();
     }
 
     void SetMotions() {
@@ -112,6 +114,7 @@ public class PlayerController : MonoBehaviour
         if (isGround) 
         { 
             numberJumps = 0;
+            CriarPoeira();
         }
 
         if (isGround || numberJumps < maxJump) 
@@ -224,4 +227,10 @@ public class PlayerController : MonoBehaviour
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
+    void CriarPoeira()
+    {
+        dust.Play();
+    }
+
 }
+
