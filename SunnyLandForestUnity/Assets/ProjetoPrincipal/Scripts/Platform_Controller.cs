@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ControllerPlatform : MonoBehaviour
+public class Platform_Controller : MonoBehaviour
 {
 
     public Transform plataforma, pontoA, pontoB;

@@ -9,6 +9,6 @@ EditorBuildSettings:
     path: Assets/ProjetoPrincipal/Scenes/Menu.unity
     guid: e4caad2773193874892d54fb0272e8d7
   - enabled: 1
-    path: Assets/ProjetoPrincipal/Scenes/level01-forest.unity
+    path: Assets/ProjetoPrincipal/Scenes/Fase1.unity
     guid: 7bd446325d1155943971ec01e063c3b9
   m_configObjects: {}
