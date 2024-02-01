@@ -38,10 +38,4 @@ public class Fade : MonoBehaviour
     {
         StartCoroutine(InicioFade());
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 }

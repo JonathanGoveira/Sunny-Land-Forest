@@ -19,12 +19,14 @@ public class ControllerPlatform : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+
+    private void FixedUpdate()
     {
         if (plataforma.position == pontoA.position)
         {
             pontoDestino = pontoB.position;
-        }else if(plataforma.position == pontoB.position)
+        }
+        else if (plataforma.position == pontoB.position)
         {
             pontoDestino = pontoA.position;
         }
