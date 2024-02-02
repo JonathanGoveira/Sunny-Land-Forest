@@ -133,4 +133,5 @@ public class Player_Controller : MonoBehaviour
         //transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
         playerSpriteRenderer.flipX = !facingRight;
     }
+    //https://www.youtube.com/watch?v=NweTWCYjxac&t=801s
 }
