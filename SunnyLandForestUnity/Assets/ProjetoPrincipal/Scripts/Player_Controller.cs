@@ -10,8 +10,8 @@ public class Player_Controller : MonoBehaviour
     [SerializeField] private LayerMask groundMask;
     [SerializeField] private float groundCheckDistance;
     [SerializeField] private float slopeChekDistance;
-    [SerializeField] private PhysicsMaterial2D noFrictionMaterial;
-    [SerializeField] private PhysicsMaterial2D frictionMaterial;
+    //[SerializeField] private PhysicsMaterial2D noFrictionMaterial;
+    //[SerializeField] private PhysicsMaterial2D frictionMaterial;
 
     private Rigidbody2D playerRB;
     private Animator playerAnimator;
@@ -21,6 +21,7 @@ public class Player_Controller : MonoBehaviour
     private float moveInput;
     private float slopeAngle;
 
+    private Vector2 perpendicularSpeed;
     private Vector2 colliderSize;
     private Vector2 position;
 
@@ -69,21 +70,22 @@ public class Player_Controller : MonoBehaviour
 
     private void DetectSlopes()
     {
-        RaycastHit2D hitSlopes = Physics2D.Raycast(position, Vector2.down, slopeChekDistance, groundMask);
-        if(hitSlopes)
+        RaycastHit2D hitSlope = Physics2D.Raycast(position, Vector2.down, slopeChekDistance, groundMask);
+        if(hitSlope)
         {
-            slopeAngle = Vector2.Angle(hitSlopes.normal, Vector2.up);
+            perpendicularSpeed = Vector2.Perpendicular(hitSlope.normal).normalized;
+            slopeAngle = Vector2.Angle(hitSlope.normal, Vector2.up);
             isOnSlope = slopeAngle != 0;
             
         }
-        if (isOnSlope && moveInput == 0)
-        {
-            playerRB.sharedMaterial = frictionMaterial;
-        }
-        else
-        {
-            playerRB.sharedMaterial = noFrictionMaterial;
-        }
+        //if (isOnSlope && moveInput == 0)
+        //{
+        //    playerRB.sharedMaterial = frictionMaterial;
+        //}
+        //else
+        //{
+            //playerRB.sharedMaterial = noFrictionMaterial;
+        //}
     }
 
     private void HandleInput()
@@ -123,7 +125,15 @@ public class Player_Controller : MonoBehaviour
 
     private void HandleMovement()
     {
-        playerRB.velocity = new Vector2(moveInput * moveSpeed, playerRB.velocity.y);
+
+        if(isOnSlope && !isJumping)
+        {
+            playerRB.velocity = new Vector2(-moveInput * (moveSpeed * perpendicularSpeed.x), -moveInput * (moveSpeed * perpendicularSpeed.y));
+        }
+        else
+        {
+            playerRB.velocity = new Vector2(moveInput * moveSpeed, playerRB.velocity.y);
+        }
     }
 
     private void Flip()

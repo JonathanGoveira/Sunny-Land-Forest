@@ -788,9 +788,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.001112347
-    width: 1
-    height: 0.9966629
+    y: 0
+    width: 0.99999994
+    height: 0.9982047
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 34
@@ -9473,10 +9473,8 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 64
-  groundCheckDistance: 1
+  groundCheckDistance: 0.7
   slopeChekDistance: 1
-  noFrictionMaterial: {fileID: 6200000, guid: 6df414daeab9b3849bb9855c468218a4, type: 2}
-  frictionMaterial: {fileID: 6200000, guid: 2dcbea432a2824d44805c7120ecd8c03, type: 2}
 --- !u!70 &744482856
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -9528,7 +9526,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 3
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 6df414daeab9b3849bb9855c468218a4, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
