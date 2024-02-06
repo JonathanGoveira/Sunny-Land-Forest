@@ -10,8 +10,8 @@ public class Player_Controller : MonoBehaviour
     [SerializeField] private LayerMask groundMask;
     [SerializeField] private float groundCheckDistance;
     [SerializeField] private float slopeChekDistance;
-    //[SerializeField] private PhysicsMaterial2D noFrictionMaterial;
-    //[SerializeField] private PhysicsMaterial2D frictionMaterial;
+    [SerializeField] private PhysicsMaterial2D noFrictionMaterial;
+    [SerializeField] private PhysicsMaterial2D frictionMaterial;
 
     private Rigidbody2D playerRB;
     private Animator playerAnimator;
@@ -21,9 +21,10 @@ public class Player_Controller : MonoBehaviour
     private float moveInput;
     private float slopeAngle;
 
-    private Vector2 perpendicularSpeed;
+    private RaycastHit2D perpendicular;
     private Vector2 colliderSize;
     private Vector2 position;
+    private Vector2 forcedDirection = new Vector2(0, 0);
 
     private bool facingRight = true;
     private bool isGrounded;
@@ -73,19 +74,21 @@ public class Player_Controller : MonoBehaviour
         RaycastHit2D hitSlope = Physics2D.Raycast(position, Vector2.down, slopeChekDistance, groundMask);
         if(hitSlope)
         {
-            perpendicularSpeed = Vector2.Perpendicular(hitSlope.normal).normalized;
+            //perpendicular = Vector2.Perpendicular(hitSlope.normal).normalized;
+            perpendicular = hitSlope;
             slopeAngle = Vector2.Angle(hitSlope.normal, Vector2.up);
             isOnSlope = slopeAngle != 0;
-            
+            if (isOnSlope && moveInput == 0)
+            {
+                playerRB.sharedMaterial = frictionMaterial;
+            }
+            else
+            {
+                playerRB.sharedMaterial = noFrictionMaterial;
+            }
+
         }
-        //if (isOnSlope && moveInput == 0)
-        //{
-        //    playerRB.sharedMaterial = frictionMaterial;
-        //}
-        //else
-        //{
-            //playerRB.sharedMaterial = noFrictionMaterial;
-        //}
+        
     }
 
     private void HandleInput()
@@ -106,9 +109,7 @@ public class Player_Controller : MonoBehaviour
     {
         playerAnimator.SetBool("IsGrounded", isGrounded);
         playerAnimator.SetBool("Walk", Mathf.Abs(moveInput) != 0 && isGrounded);
-        //playerAnimator.SetBool("Walk", playerRB.velocity.x != 0 && isGrounded); //true ou false dependo se tiver movimento no eixo x (BUG DA RAMPA AQUI)
         playerAnimator.SetBool("Jump", !isGrounded);
-        Debug.Log(playerRB.velocity.x);
     }
 
     private void HandleLanding() 
@@ -126,9 +127,19 @@ public class Player_Controller : MonoBehaviour
     private void HandleMovement()
     {
 
-        if(isOnSlope && !isJumping)
+        if (isOnSlope && !isJumping)
         {
-            playerRB.velocity = new Vector2(-moveInput * (moveSpeed * perpendicularSpeed.x), -moveInput * (moveSpeed * perpendicularSpeed.y));
+            moveSpeed = 0.15f;
+            if (isGrounded && moveInput >= 0)
+            {
+                forcedDirection = new Vector2(perpendicular.normal.y, -perpendicular.normal.x);
+
+            }
+            else
+            {
+                forcedDirection = new Vector2(-perpendicular.normal.y, perpendicular.normal.x);
+            }
+            transform.Translate(forcedDirection * Mathf.Abs(moveInput) * moveSpeed);
         }
         else
         {
