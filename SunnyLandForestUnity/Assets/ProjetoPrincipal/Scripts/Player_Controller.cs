@@ -6,10 +6,10 @@ using UnityEngine.Experimental.GlobalIllumination;
 public class Player_Controller : MonoBehaviour
 {
     [SerializeField] private float moveSpeed;
-    [SerializeField] private float JumpForce;
+    [SerializeField] private float jumpForce;
     [SerializeField] private LayerMask groundMask;
     [SerializeField] private float groundCheckDistance;
-    [SerializeField] private float slopeChekDistance;
+    [SerializeField] private float slopeCheckDistance;
     [SerializeField] private PhysicsMaterial2D noFrictionMaterial;
     [SerializeField] private PhysicsMaterial2D frictionMaterial;
 
@@ -21,10 +21,9 @@ public class Player_Controller : MonoBehaviour
     private float moveInput;
     private float slopeAngle;
 
-    private RaycastHit2D perpendicular;
+    private Vector2 perpendicular;
     private Vector2 colliderSize;
-    private Vector2 position;
-    private Vector2 forcedDirection = new Vector2(0, 0);
+    private Vector2 playerPosition;
 
     private bool facingRight = true;
     private bool isGrounded;
@@ -38,13 +37,22 @@ public class Player_Controller : MonoBehaviour
         LoadComponents();
     }
 
+    private void LoadComponents()
+    {
+        playerRB = GetComponent<Rigidbody2D>();
+        playerAnimator = GetComponent<Animator>();
+        playerCollider = GetComponent<CapsuleCollider2D>();
+        playerSpriteRenderer = GetComponent<SpriteRenderer>();
+
+        colliderSize = playerCollider.size;
+    }
     // Update is called once per frame
     void Update()
     {
-        position = transform.position - new Vector3(0f, colliderSize.y / 2, 0f);
+       playerPosition = transform.position - new Vector3(0f, colliderSize.y / 2, 0f);
 
         DetectGround();
-        DetectSlopes();
+        DetectSlope();
         HandleInput();
         HandleAnimations();
     }
@@ -53,56 +61,83 @@ public class Player_Controller : MonoBehaviour
     {
         HandleMovement();
     }
-    private void LoadComponents() 
-    { 
-        playerRB = GetComponent<Rigidbody2D>();
-        playerAnimator = GetComponent<Animator>();
-        playerCollider = GetComponent<CapsuleCollider2D>();
-        playerSpriteRenderer = GetComponent<SpriteRenderer>();
 
-        colliderSize = playerCollider.size;
-    }
-    private void DetectGround () 
+    private void DetectGround()
     {
-        isGrounded = Physics2D.Raycast(position, Vector3.down, groundCheckDistance, groundMask);
+        isGrounded = Physics2D.Raycast(playerPosition, Vector3.down, groundCheckDistance, groundMask);
+
         if (isGrounded && !wasOnGround) HandleLanding();
+
         wasOnGround = isGrounded;
     }
 
-    private void DetectSlopes()
+    private void DetectSlope()
     {
-        RaycastHit2D hitSlope = Physics2D.Raycast(position, Vector2.down, slopeChekDistance, groundMask);
+        RaycastHit2D hitSlope = Physics2D.Raycast(playerPosition, Vector2.down, slopeCheckDistance, groundMask);
+
         if(hitSlope)
         {
-            //perpendicular = Vector2.Perpendicular(hitSlope.normal).normalized;
-            perpendicular = hitSlope;
+            perpendicular = Vector2.Perpendicular(hitSlope.normal).normalized;
+
             slopeAngle = Vector2.Angle(hitSlope.normal, Vector2.up);
             isOnSlope = slopeAngle != 0;
-            if (isOnSlope && moveInput == 0)
-            {
-                playerRB.sharedMaterial = frictionMaterial;
-            }
-            else
-            {
-                playerRB.sharedMaterial = noFrictionMaterial;
-            }
-
+            print(isOnSlope);
         }
-        
+
+        if(isOnSlope && moveInput == 0)
+        {
+            playerRB.sharedMaterial = frictionMaterial;
+        }
+        else
+        {
+            playerRB.sharedMaterial = noFrictionMaterial;
+        }
+    }
+
+    private void HandleMovement()
+    {
+        if (isOnSlope && !isJumping)
+        {
+            // MOVIMENTAÇÃO NOS SLOPES
+            playerRB.velocity = new Vector2(-moveInput * moveSpeed * perpendicular.x, -moveInput * moveSpeed * perpendicular.y);
+        }
+        else
+        {
+            // MOVIMENTAÇÃO PADRÃO
+            playerRB.velocity = new Vector2(moveInput * moveSpeed, playerRB.velocity.y);
+        }
     }
 
     private void HandleInput()
     {
         moveInput = Input.GetAxisRaw("Horizontal");
-        if(Input.GetKeyDown(KeyCode.Space) && isGrounded) 
-        { 
+
+        if(Input.GetKeyDown(KeyCode.Space)) 
+        {
             HandleJump();
         }
-        if((moveInput > 0 && !facingRight) || (moveInput < 0 && facingRight)) 
-        {
+        if((moveInput > 0 && !facingRight) || (moveInput <0 && facingRight) ) 
+        { 
             Flip();
-        
         }
+    }
+
+    private void HandleJump()
+    {
+        isJumping = true;
+        playerRB.velocity = new Vector2(playerRB.velocity.x, jumpForce);
+    }
+
+    private void HandleLanding()
+    {
+        isJumping = false;
+    }
+    private void DebugDraw(RaycastHit2D hitSlope)
+    {
+        Debug.DrawRay(playerPosition, Vector3.down * groundCheckDistance, Color.blue);
+        //Debug.DrawRay(playerPosition, perpendicular, Color.red);
+        Debug.DrawRay(playerPosition, hitSlope.normal, Color.green);
+        //Debug.DrawRay(playerPosition, Vector2.down * slopeChekDistance, Color.white);
     }
 
     private void HandleAnimations()
@@ -111,48 +146,10 @@ public class Player_Controller : MonoBehaviour
         playerAnimator.SetBool("Walk", Mathf.Abs(moveInput) != 0 && isGrounded);
         playerAnimator.SetBool("Jump", !isGrounded);
     }
-
-    private void HandleLanding() 
-    {
-        isJumping = false;
-    }
-
-    private void HandleJump()
-    {
-        isJumping = true;
-        playerRB.velocity = new Vector2(playerRB.velocity.x, JumpForce);
-    
-    }
-
-    private void HandleMovement()
-    {
-
-        if (isOnSlope && !isJumping)
-        {
-            moveSpeed = 0.15f;
-            if (isGrounded && moveInput >= 0)
-            {
-                forcedDirection = new Vector2(perpendicular.normal.y, -perpendicular.normal.x);
-
-            }
-            else
-            {
-                forcedDirection = new Vector2(-perpendicular.normal.y, perpendicular.normal.x);
-            }
-            transform.Translate(forcedDirection * Mathf.Abs(moveInput) * moveSpeed);
-        }
-        else
-        {
-            playerRB.velocity = new Vector2(moveInput * moveSpeed, playerRB.velocity.y);
-        }
-    }
-
     private void Flip()
     {
         facingRight = !facingRight;
-        //transform.Rotate(0f, 180f, 0f);
-        //transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
         playerSpriteRenderer.flipX = !facingRight;
     }
-    //https://www.youtube.com/watch?v=NweTWCYjxac&t=801s
+    
 }

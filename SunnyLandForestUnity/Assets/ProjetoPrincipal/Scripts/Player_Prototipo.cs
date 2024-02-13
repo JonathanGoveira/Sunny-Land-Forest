@@ -21,7 +21,6 @@ public class Player_Prototipo : MonoBehaviour
     private SpriteRenderer playerSpriteRenderer;
 
     private float moveInput;
-    private float slopeAngle;
 
     private Vector2 perpendicularSpeed;
     private Vector2 colliderSize;
@@ -30,10 +29,7 @@ public class Player_Prototipo : MonoBehaviour
 
     private bool facingRight = true;
     private bool isGrounded;
-    private bool wasOnGround;
-    private bool isJumping;
-    private bool isOnSlope;
-    private RaycastHit2D hitSlope;
+
 
     // Start is called before the first frame update
     void Start()
@@ -52,10 +48,7 @@ public class Player_Prototipo : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //HandleMovement();
         MoveAndNormalizeSlopes();
-        //DetectGround();
-        //DetectSlopes();
     }
     private void LoadComponents()
     {
@@ -93,7 +86,8 @@ public class Player_Prototipo : MonoBehaviour
             {
                 forcedDirection = new Vector2(-hitDirection.normal.y, hitDirection.normal.x);
             }
-            transform.Translate(forcedDirection * Mathf.Abs(moveInput) * moveSpeed);
+            //transform.Translate(forcedDirection * Mathf.Abs(moveInput) * moveSpeed);
+            playerRB.velocity = new Vector2(forcedDirection.x * moveSpeed, playerRB.velocity.y);
         }
         else { isGrounded = false; }
         playerRB.velocity = new Vector2(moveInput * moveSpeed, playerRB.velocity.y);
@@ -105,8 +99,7 @@ public class Player_Prototipo : MonoBehaviour
     {
         moveInput = Input.GetAxisRaw("Horizontal");
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
-        {
-            
+        {   
             HandleJump();
         }
         if ((moveInput > 0 && !facingRight) || (moveInput < 0 && facingRight))
@@ -124,7 +117,7 @@ public class Player_Prototipo : MonoBehaviour
     }
     private void HandleJump()
     {
-        playerRB.velocity = new Vector2(playerRB.velocity.x * moveSpeed, JumpForce);
+        playerRB.velocity = new Vector2(playerRB.velocity.x * JumpForce, JumpForce);
         //playerRB.AddForce(new Vector2(0f, JumpForce));
     }
     private void Flip()
