@@ -1,242 +1,155 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.XR;
-using UnityEngine.SceneManagement;
-
+using UnityEngine.Experimental.GlobalIllumination;
 
 public class PlayerController : MonoBehaviour
 {
-    // propriedades do player
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private float jumpForce;
+    [SerializeField] private LayerMask groundMask;
+    [SerializeField] private float groundCheckDistance;
+    [SerializeField] private float slopeCheckDistance;
+    [SerializeField] private PhysicsMaterial2D noFrictionMaterial;
+    [SerializeField] private PhysicsMaterial2D frictionMaterial;
+
+    private Rigidbody2D playerRB;
     private Animator playerAnimator;
-    private Rigidbody2D playerRigidbody2D;
+    private CapsuleCollider2D playerCollider;
     private SpriteRenderer playerSpriteRenderer;
-    private bool playerIvuneravel;
-    public GameObject playerDie;
-    // filho do player que verifica se o player está tocando no chão
-    [Header("Collision Settings")]
-    public bool isGround;
-    private Transform groundCheck;
 
-    // variaveis de movimentação
-    [Header("Move Settings")]
-    public float speed;
-    public float touchRun = 0.0f;
-    public bool facinRight = true;
-    public ParticleSystem dust;
+    private float moveInput;
+    private float slopeAngle;
 
-    // pulo
-    [Header("Jump Settings")]
-    public int numberJumps;
-    public int maxJump;
-    public float jumpForce;
-    public float jumpEnemieForce;
-    private bool jump = false;
+    private Vector2 perpendicular;
+    private Vector2 colliderSize;
+    private Vector2 playerPosition;
 
-    // game control
-    [Header("Audio Settings")]
-    public AudioSource fxGame;
-    public AudioClip fxPulo;
-    public int vidas = 3;
-    public Color hitColor;
-    private GameControl _gameControl;
+    private bool facingRight = true;
+    private bool isGrounded;
+    private bool wasOnGround;
+    private bool isJumping;
+    private bool isOnSlope;
 
     // Start is called before the first frame update
     void Start()
     {
-        //groundCheck = this.gameObject.transform.GetChild(0);
-        groundCheck = GameObject.Find("GroundCheck").transform;
-
-        playerAnimator = GetComponent<Animator>();
-        playerRigidbody2D = GetComponent<Rigidbody2D>();
-        playerSpriteRenderer = GetComponent<SpriteRenderer>();
-
-        //_gameControl = FindObjectOfType(typeof(GameControl)) as GameControl;
-        _gameControl = FindObjectOfType<GameControl>();
-
+        LoadComponents();
     }
 
+    private void LoadComponents()
+    {
+        playerRB = GetComponent<Rigidbody2D>();
+        playerAnimator = GetComponent<Animator>();
+        playerCollider = GetComponent<CapsuleCollider2D>();
+        playerSpriteRenderer = GetComponent<SpriteRenderer>();
+
+        colliderSize = playerCollider.size;
+    }
     // Update is called once per frame
     void Update()
     {
-        isGround = CheckCollisionLinecast(this.transform,groundCheck);
-        SetMotions();
+       playerPosition = transform.position - new Vector3(0f, colliderSize.y / 2, 0f);
 
-        SetAnimations();
-        
+        DetectGround();
+        DetectSlope();
+        HandleInput();
+        HandleAnimations();
     }
 
     private void FixedUpdate()
     {
-        MovePlayer(touchRun);
+        HandleMovement();
+    }
 
-        if (jump)
+    private void DetectGround()
+    {
+        isGrounded = Physics2D.Raycast(playerPosition, Vector3.down, groundCheckDistance, groundMask);
+
+        if (isGrounded && !wasOnGround) HandleLanding();
+
+        wasOnGround = isGrounded;
+    }
+
+    private void DetectSlope()
+    {
+        RaycastHit2D hitSlope = Physics2D.Raycast(playerPosition, Vector2.down, slopeCheckDistance, groundMask);
+
+        if(hitSlope)
         {
-            JumpPlayer();
+            perpendicular = Vector2.Perpendicular(hitSlope.normal).normalized;
+
+            slopeAngle = Vector2.Angle(hitSlope.normal, Vector2.up);
+            isOnSlope = slopeAngle != 0;
+            print(isOnSlope);
+        }
+
+        if(isOnSlope && moveInput == 0)
+        {
+            playerRB.sharedMaterial = frictionMaterial;
+        }
+        else
+        {
+            playerRB.sharedMaterial = noFrictionMaterial;
         }
     }
 
-    void MovePlayer(float movimentoH) 
+    private void HandleMovement()
     {
-        playerRigidbody2D.velocity = new Vector2(movimentoH * speed,playerRigidbody2D.velocity.y);
-        
-        if(movimentoH < 0 && facinRight || (movimentoH > 0 && !facinRight)) 
+        if (isOnSlope && !isJumping)
         {
+            // MOVIMENTAÇÃO NOS SLOPES
+            playerRB.velocity = new Vector2(-moveInput * moveSpeed * perpendicular.x, -moveInput * moveSpeed * perpendicular.y);
+        }
+        else
+        {
+            // MOVIMENTAÇÃO PADRÃO
+            playerRB.velocity = new Vector2(moveInput * moveSpeed, playerRB.velocity.y);
+        }
+    }
+
+    private void HandleInput()
+    {
+        moveInput = Input.GetAxisRaw("Horizontal");
+
+        if(Input.GetKeyDown(KeyCode.Space)) 
+        {
+            HandleJump();
+        }
+        if((moveInput > 0 && !facingRight) || (moveInput <0 && facingRight) ) 
+        { 
             Flip();
         }
     }
 
-    void Flip()
+    private void HandleJump()
     {
-        facinRight = !facinRight;
-        // inverte o sinal do transform para fazer o flip do personagem, 1 passa a ser -1 e vice e versa
-        transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
-        CriarPoeira();
+        isJumping = true;
+        playerRB.velocity = new Vector2(playerRB.velocity.x, jumpForce);
     }
 
-    void SetMotions() {
-        touchRun = Input.GetAxisRaw("Horizontal");
-        if (Input.GetButtonDown("Jump"))
-        {
-            jump = true;
-        }
-    }
-    void SetAnimations()
+    private void HandleLanding()
     {
-        playerAnimator.SetBool("IsGrounded", isGround);
-        playerAnimator.SetBool("Walk", playerRigidbody2D.velocity.x != 0 && isGround); //true ou false dependo se tiver movimento no eixo x
-        playerAnimator.SetBool("Jump", !isGround);
+        isJumping = false;
     }
-
-    void JumpPlayer() 
+    private void DebugDraw(RaycastHit2D hitSlope)
     {
-        if (isGround) 
-        { 
-            numberJumps = 0;
-            CriarPoeira();
-        }
-
-        if (isGround || numberJumps < maxJump) 
-        {
-            playerRigidbody2D.AddForce(new Vector2(0f, jumpForce));
-            isGround = false;
-            numberJumps++;
-            fxGame.PlayOneShot(fxPulo);
-        }
-        jump = false;
+        Debug.DrawRay(playerPosition, Vector3.down * groundCheckDistance, Color.blue);
+        //Debug.DrawRay(playerPosition, perpendicular, Color.red);
+        Debug.DrawRay(playerPosition, hitSlope.normal, Color.green);
+        //Debug.DrawRay(playerPosition, Vector2.down * slopeChekDistance, Color.white);
     }
 
-    bool CheckCollisionLinecast(Transform obj1, Transform obj2) 
+    private void HandleAnimations()
     {
-        // traça uma linha entre o player e seu objeto filho groundCheck e caso tenha um colisor com a layer "Ground" entre essa linha retorna true
-        bool collided;
-        collided = Physics2D.Linecast(obj1.position, obj2.position, 1 << LayerMask.NameToLayer("Ground"));
-        //isGround = collided;
-        return collided;
+        playerAnimator.SetBool("IsGrounded", isGrounded);
+        playerAnimator.SetBool("Walk", Mathf.Abs(moveInput) != 0 && isGrounded);
+        playerAnimator.SetBool("Jump", !isGrounded);
     }
-
-
-    void OnTriggerEnter2D(Collider2D collision)
+    private void Flip()
     {
-        switch (collision.gameObject.tag)
-        {
-            case "Coletaveis":
-                _gameControl.Pontuacao(1);
-                Destroy(collision.gameObject);
-                break;
-
-            case "Inimigos":
-
-                // Destroi o objeto pai do inimigo
-                Destroy(collision.gameObject.transform.parent.gameObject);
-                Debug.Log("Colidou com o " + collision.gameObject.name);
-                Debug.Log("Seu pai é o " + collision.gameObject.transform.root.name);
-                GameObject explosao = Instantiate(_gameControl.hitInimigoMortoPrefab, this.transform.position, this.transform.localRotation);
-                Destroy(explosao, 0.5f);
-
-                Rigidbody2D rigidbody = GetComponent<Rigidbody2D>();
-                rigidbody.velocity = new Vector2(rigidbody.velocity.x, 0);
-                rigidbody.AddForce(new Vector2(0, jumpEnemieForce));
-
-                _gameControl.fxGame.PlayOneShot(_gameControl.fxInimigoMorto);
-
-                break;
-
-            case "Damage":
-                Hurt();
-                break;
-        }
+        facingRight = !facingRight;
+        playerSpriteRenderer.flipX = !facingRight;
     }
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        switch (collision.gameObject.tag)
-        {
-            case "Plataforma":
-                this.transform.parent = collision.transform;
-                break;
-            case "Inimigos":
-                Hurt();    
-                break;
-        }
-    }
-
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        switch (collision.gameObject.tag)
-        {
-            case "Plataforma":
-                this.transform.parent = null;
-                break;
-        }
-    }
-
-    void Hurt()
-    {
-        if (!playerIvuneravel)
-        { 
-            playerIvuneravel = true;
-            vidas--;
-            StartCoroutine("Dano");
-           _gameControl.BarraDeVidas(vidas);
-
-            if (vidas < 1)
-            {
-                GameObject pDieTemp = Instantiate(playerDie, this.transform.position, Quaternion.identity);
-                Rigidbody2D rbDie = pDieTemp.GetComponent<Rigidbody2D>();
-                rbDie.AddForce(new Vector2(150f, 500f));
-                _gameControl.fxGame.PlayOneShot(_gameControl.fxDie);
-                gameObject.SetActive(false);
-                Invoke("CarregaJogo", 4f);
-            }
-        
-        }
-
-    }
-    IEnumerator Dano()
-    {
-        playerSpriteRenderer.color = hitColor;
-        yield return new WaitForSeconds(0.1f);
-
-        for (float i = 0; i<1; i += 0.1f)
-        {
-            playerSpriteRenderer.enabled = false;
-            yield return new WaitForSeconds(0.1f);
-            playerSpriteRenderer.enabled = true;
-            yield return new WaitForSeconds(0.1f);
-        }
-        playerSpriteRenderer.color = Color.white;
-        playerIvuneravel = false;
-    }
-
-    void CarregaJogo() 
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
-    void CriarPoeira()
-    {
-        dust.Play();
-    }
-
+    
 }
-
