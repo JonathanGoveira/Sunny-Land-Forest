@@ -248,6 +248,7 @@ GameObject:
   - component: {fileID: 72604812}
   - component: {fileID: 72604813}
   - component: {fileID: 72604814}
+  - component: {fileID: 72604815}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -419,20 +420,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72c4bd40349a866409cd5530111ad094, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerDie: {fileID: 1023497792565296445, guid: 9764b589d9d1f644a983a7b2f3f3dac2, type: 3}
-  isGround: 0
-  speed: 6.1
-  touchRun: 0
-  facinRight: 1
-  dust: {fileID: 1496281578}
-  numberJumps: 0
-  maxJump: 1
-  jumpForce: 700
-  jumpEnemieForce: 500
-  fxGame: {fileID: 1463774968}
-  fxPulo: {fileID: 8300000, guid: 54b54132e5c0e7b40887dfe7ff8bb335, type: 3}
-  vidas: 3
-  hitColor: {r: 1, g: 1, b: 1, a: 0.78431374}
+--- !u!114 &72604815
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 72604808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd02704db3cc98440a5e5e94a8ff3bf8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 5
+  jumpForce: 12
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 64
+  groundCheckDistance: 1
+  slopeCheckDistance: 1
+  noFrictionMaterial: {fileID: 6200000, guid: 6df414daeab9b3849bb9855c468218a4, type: 2}
+  frictionMaterial: {fileID: 6200000, guid: 2dcbea432a2824d44805c7120ecd8c03, type: 2}
 --- !u!1 &97233688
 GameObject:
   m_ObjectHideFlags: 0
@@ -856,12 +864,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f989518fc4cbe0741a6c0c7a619dd757, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  plataforma: {fileID: 13370224}
-  pontoA: {fileID: 847895718}
-  pontoB: {fileID: 1813290104}
-  velocidadePlataforma: 0.05
-  pontoDestino: {x: 0, y: 0, z: 0}
-  player: {fileID: 72604808}
 --- !u!1 &332595283
 GameObject:
   m_ObjectHideFlags: 0
@@ -1059,12 +1061,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f989518fc4cbe0741a6c0c7a619dd757, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  plataforma: {fileID: 1710080561}
-  pontoA: {fileID: 1181231335}
-  pontoB: {fileID: 36913919}
-  velocidadePlataforma: 0.01
-  pontoDestino: {x: 0, y: 0, z: 0}
-  player: {fileID: 72604808}
 --- !u!4 &469534260
 Transform:
   m_ObjectHideFlags: 0
@@ -1383,8 +1379,8 @@ Camera:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 0.7322654
-    height: 0.8617594
+    width: 1
+    height: 1
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 34
@@ -10001,12 +9997,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f989518fc4cbe0741a6c0c7a619dd757, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  plataforma: {fileID: 2125133885}
-  pontoA: {fileID: 2109257227}
-  pontoB: {fileID: 942362823}
-  velocidadePlataforma: 0.05
-  pontoDestino: {x: 0, y: 0, z: 0}
-  player: {fileID: 72604808}
 --- !u!1 &723416768
 GameObject:
   m_ObjectHideFlags: 0
@@ -10054,12 +10044,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f989518fc4cbe0741a6c0c7a619dd757, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  plataforma: {fileID: 549731092}
-  pontoA: {fileID: 1176347500}
-  pontoB: {fileID: 1004104103}
-  velocidadePlataforma: 0.05
-  pontoDestino: {x: 0, y: 0, z: 0}
-  player: {fileID: 72604808}
 --- !u!1 &836600218
 GameObject:
   m_ObjectHideFlags: 0
@@ -10567,12 +10551,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f989518fc4cbe0741a6c0c7a619dd757, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  plataforma: {fileID: 1506647973}
-  pontoA: {fileID: 842745958}
-  pontoB: {fileID: 1275711926}
-  velocidadePlataforma: 0.05
-  pontoDestino: {x: 0, y: 0, z: 0}
-  player: {fileID: 72604808}
 --- !u!1 &1011048647
 GameObject:
   m_ObjectHideFlags: 0
